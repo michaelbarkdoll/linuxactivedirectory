@@ -1,0 +1,20 @@
+---
+
+# prerequisities:
+# - RSAT modules to active directory enabled
+# - Remote ssh access
+
+- name: Remove {{ ad_short_hostname }} from AD at {{ ad_computer_ou }} if it exists
+  win_shell: |
+      powershell.exe -noprofile -executionpolicy bypass -File "C:\users\0csadmin2\adremovecomp.ps1" {{ ad_short_hostname }} "{{ ad_computer_ou }}"
+  register: adcomputerobject
+
+- name: Powershell output
+  debug:
+    var: adcomputerobject
+
+- name: Fail if {{ ad_short_hostname }} was not removed from AD at {{ ad_computer_ou }}
+  ansible.builtin.debug:
+    msg: Debug {{ ad_short_hostname }} AD status {{ adcomputerobject.stdout }} at {{ ad_computer_ou }}
+  failed_when: adcomputerobject.stdout is not search("removed")
+
