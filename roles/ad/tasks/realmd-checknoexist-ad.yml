@@ -36,7 +36,7 @@
 - name: Fail if {{ ad_short_hostname }} is in AD at {{ ad_computer_ou }}
   ansible.builtin.debug:
     msg: Debug {{ ad_short_hostname }} AD status {{ adcomputerobject.stdout }} at {{ ad_computer_ou }}
-  failed_when: adcomputerobject.stdout == "exists"
+  failed_when: adcomputerobject.stdout_lines == "exists"
 
 
 # - name: Check if {{ ad_short_hostname }} is in AD at {{ ad_computer_ou }}
