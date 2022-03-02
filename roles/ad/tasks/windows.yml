@@ -5,8 +5,7 @@
     path: C:\csscripts\powershell
     state: directory
 
-- name: Copy folder contents recursively
+- name: Recursively Copy folder contents to csscripts
   win_copy:
     src: templates/powershell/
     dest: C:\csscripts\powershell
-    

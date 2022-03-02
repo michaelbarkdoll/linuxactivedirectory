@@ -13,10 +13,10 @@
   tags:
   - create-ad
 
-# - name: Create AD computer object from local machine
-#   include: realmd-createcomp-ad.yml
-#   tags:
-#   - create-ad
+- name: Create AD computer object from local machine
+  include: realmd-createcomp-ad.yml
+  tags:
+  - create-ad
 
 # - name: Check AD has existing computer object previously created from local machine
 #   include: realmd-checkexist-ad.yml
