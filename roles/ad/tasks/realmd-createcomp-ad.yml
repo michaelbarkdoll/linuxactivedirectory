@@ -16,4 +16,4 @@
 - name: Fail if {{ ad_short_hostname }} is not created in AD at {{ ad_computer_ou }}
   ansible.builtin.debug:
     msg: Debug {{ ad_short_hostname }} AD status {{ adcomputerobject.stdout }} at {{ ad_computer_ou }}
-  failed_when: adcomputerobject.stdout is not search("exists")
+  failed_when: adcomputerobject.stdout is not search("created")
