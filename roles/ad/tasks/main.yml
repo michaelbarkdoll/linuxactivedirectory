@@ -8,20 +8,20 @@
   - post-ad-join
   - remove-ad
 
-- name: Check AD doesnt have computer object from local machine
+- name: Check AD doesnt have computer object
   include: realmd-checknoexist-ad.yml
   tags:
   - create-ad
 
-- name: Create AD computer object from local machine
+- name: Create AD computer object
   include: realmd-createcomp-ad.yml
   tags:
   - create-ad
 
-# - name: Check AD has existing computer object previously created from local machine
-#   include: realmd-checkexist-ad.yml
-#   tags:
-#   - join-ad
+- name: Check AD has computer object previously created
+  include: realmd-checkexist-ad.yml
+  tags:
+  - join-ad
 
 # - name: AD join
 #   include: realmd-join.yml

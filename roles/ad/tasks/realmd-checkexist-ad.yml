@@ -1,0 +1,20 @@
+---
+
+# prerequisities:
+# - RSAT modules to active directory enabled
+# - Remote ssh
+
+- name: Check if {{ ad_short_hostname }} is in AD at {{ ad_computer_ou }}
+  win_shell: |
+      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\adcheckcomp.ps1" {{ ad_short_hostname }} "{{ ad_computer_ou }}"
+  register: adcomputerobject
+
+- name: Powershell output
+  debug:
+    var: adcomputerobject
+
+- name: Fail if {{ ad_short_hostname }} is not in AD at {{ ad_computer_ou }}
+  ansible.builtin.debug:
+    msg: Debug {{ ad_short_hostname }} AD status {{ adcomputerobject.stdout }} at {{ ad_computer_ou }}
+  failed_when: adcomputerobject.stdout is not search("exists")
+
