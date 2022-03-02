@@ -5,28 +5,28 @@
   tags:
   - create-ad
 
-- name: Create AD computer object from local machine
-  include: realmd-createcomp-ad.yml
-  tags:
-  - create-ad
+# - name: Create AD computer object from local machine
+#   include: realmd-createcomp-ad.yml
+#   tags:
+#   - create-ad
 
-- name: Check AD has existing computer object previously created from local machine
-  include: realmd-checkexist-ad.yml
-  tags:
-  - join-ad
+# - name: Check AD has existing computer object previously created from local machine
+#   include: realmd-checkexist-ad.yml
+#   tags:
+#   - join-ad
 
-- name: AD join
-  include: realmd-join.yml
-  tags: 
-  - join-ad
+# - name: AD join
+#   include: realmd-join.yml
+#   tags: 
+#   - join-ad
 
-- name: Post AD configuration
-  include: realmd-after-join.yml
-  tags: 
-  - post-ad-join
-  - join-ad
+# - name: Post AD configuration
+#   include: realmd-after-join.yml
+#   tags: 
+#   - post-ad-join
+#   - join-ad
 
-- name: Remove computer from Active Directory
-  include: realmd-remove-ad.yml
-  tags:
-  - remove-ad
+# - name: Remove computer from Active Directory
+#   include: realmd-remove-ad.yml
+#   tags:
+#   - remove-ad
