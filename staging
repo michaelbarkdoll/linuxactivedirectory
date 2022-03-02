@@ -3,7 +3,7 @@
 
 [windows:vars]
 ansible_user=aduser
-ad_workstation=192.168.1.10
+; ad_workstation=192.168.1.10
 ansible_port=22
 ansible_ssh_common_args='-o PreferredAuthentications=password -o PubkeyAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 ansible_shell_type=powershell
