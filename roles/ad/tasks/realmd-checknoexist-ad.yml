@@ -23,3 +23,25 @@
 - name: display result_get_host
   debug:
     var: result_get_host
+
+- name: Check if {{ ad_short_hostname }} is in AD at {{ ad_computer_ou }}
+  win_shell: |
+      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\adcheckcomp.ps1" {{ ad_short_hostname }} "{{ ad_computer_ou }}"
+  register: result_powershell
+
+- name: Powershell output
+  debug:
+    var: result_powershell
+
+
+
+# - name: Check if {{ ad_short_hostname }} is in AD at {{ ad_computer_ou }}
+#   command: powershell.exe -noprofile -executionpolicy bypass -File "C:\users\0csadmin2\adcheckcomp.ps1" {{ ad_short_hostname }} "{{ ad_computer_ou }}"
+#   delegate_to: localhost
+#   become: no
+#   register: adcomputerobject
+
+# - name: Fail if {{ ad_short_hostname }} is in AD at {{ ad_computer_ou }}
+#   ansible.builtin.debug:
+#     msg: Debug {{ ad_short_hostname }} AD status {{ adcomputerobject.stdout }} at {{ ad_computer_ou }}
+#   failed_when: adcomputerobject.stdout == "exists"

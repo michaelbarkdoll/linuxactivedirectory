@@ -1,5 +1,13 @@
 ---
 
+- name: Prep Windows Machines
+  include: windows.yml
+  tags:
+  - create-ad
+  - join-ad
+  - post-ad-join
+  - remove-ad
+
 - name: Check AD doesnt have computer object from local machine
   include: realmd-checknoexist-ad.yml
   tags:

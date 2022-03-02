@@ -1,0 +1,12 @@
+---
+
+- name: Create directory structure
+  win_file:
+    path: C:\csscripts\powershell
+    state: directory
+
+- name: Copy folder contents recursively
+  win_copy:
+    src: templates/powershell/
+    dest: C:\csscripts\powershell
+    
