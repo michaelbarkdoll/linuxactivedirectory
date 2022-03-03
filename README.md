@@ -36,17 +36,20 @@ Manually override variables with:
 --extra-vars '{"ansible_user":"aduser","ansible_password":"","ansible_host":"192.168.1.10","ad_computer_ou":"ou=Sample,dc=dc,dc=domain,dc=edu","ad_short_hostname":""}
 ```
 
+Update ansible_host in the following command to represent the Windows with ssh access.
+Update ad_short_hostname to represent the computer object you'll be creating/joining/removing.
+
 ## Create Active Directory Computer Object via ssh to Windows
 ```
-ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --vault-password-file=.vault_pass -i staging playbook.yml --tags create-ad --extra-vars '{"ad_short_hostname":""}'
+ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --vault-password-file=.vault_pass -i staging playbook.yml --tags create-ad --extra-vars '{"ansible_host":"192.168.1.10","ad_short_hostname":""}'
 ```
 
 ## Check if Computer Object Exists Prior to Joining AD via ssh to Windows
 ```
-ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --vault-password-file=.vault_pass -i staging playbook.yml --tags join-ad --extra-vars '{"ad_short_hostname":""}'
+ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --vault-password-file=.vault_pass -i staging playbook.yml --tags join-ad --extra-vars '{"ansible_host":"192.168.1.10","ad_short_hostname":""}'
 ```
 
 ## Remove Active Directory Computer Object via ssh to Windows
 ```
-ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --vault-password-file=.vault_pass -i staging playbook.yml --tags remove-ad --extra-vars '{"ad_short_hostname":""}'
+ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --vault-password-file=.vault_pass -i staging playbook.yml --tags remove-ad --extra-vars '{"ansible_host":"192.168.1.10","ad_short_hostname":""}'
 ```
