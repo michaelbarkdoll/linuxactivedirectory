@@ -19,15 +19,16 @@ You may later update these values:
 ansible-vault edit group_vars/all.yaml
 ```
 
-Use the following arguments to unlock encrypted ansible variables:
-```
---ask-vault-pass
---vault-password-file=filename
-```
-
 ```
 echo "secret_password" > .vault_pass
 chmod 600 .vault_pass
+```
+
+
+Use the following amsible-playbook arguments to unlock encrypted ansible variables:
+```
+--ask-vault-pass
+--vault-password-file=filename
 ```
 
 ## Create Active Directory Computer Object
