@@ -1,5 +1,5 @@
 # linuxactivedirectory
-A simple repository for managing active directory membership.
+A simple repository for managing active directory computer object creation/confirmation/deletion.
 
 ## Configure site specific variables:
 ```
