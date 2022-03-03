@@ -25,7 +25,7 @@ chmod 600 .vault_pass
 ```
 
 
-Use the following amsible-playbook arguments to unlock encrypted ansible variables:
+Use the following ansible-playbook arguments to unlock encrypted ansible variables:
 ```
 --ask-vault-pass
 --vault-password-file=filename
