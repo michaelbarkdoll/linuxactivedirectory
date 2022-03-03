@@ -1,2 +1,14 @@
-ad_workstation: 192.168.1.10
+# Windows AD host with ssh access
+ansible_host: 192.168.1.10
 ad_domain: ad.domain.edu
+ansible_user: aduser
+ansible_password: adpassword
+ad_computer_ou: "ou=Sample,dc=dc,dc=domain,dc=edu"
+
+# ansible-vault encrypt group_vars/all.yaml
+#New Vault password: 
+#Confirm New Vault password: 
+#Encryption successful
+
+# ansible-vault decrypt group_vars/all.yaml
+
