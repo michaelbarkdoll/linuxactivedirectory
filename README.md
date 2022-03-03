@@ -1,6 +1,8 @@
 # linuxactivedirectory
 A simple repository for managing active directory computer object creation/confirmation/deletion.
 
+See README-win.md for details on setting up Windows SSH access.
+
 ## Configure site specific variables:
 ```
 cp ~/group_vars/all.yaml.sample ~/group_vars/all.yaml
