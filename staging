@@ -7,5 +7,5 @@ ansible_user=aduser
 ansible_port=22
 ansible_ssh_common_args='-o PreferredAuthentications=password -o PubkeyAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 ansible_shell_type=powershell
-ansible_become_user="{{ ansible_user }}"
+; ansible_become_user="{{ ansible_user }}"
 ; ad_computer_ou='ou=Sample,dc=controller,dc=domain,dc=edu'
