@@ -1,6 +1,6 @@
 ---
 
-- name: Prep Windows Machines
+- name: Prep Windows machine with powershell scripts
   include: windows.yml
   tags:
   - create-ad

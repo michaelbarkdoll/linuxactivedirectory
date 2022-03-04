@@ -7,5 +7,5 @@
 
 - name: Recursively Copy folder contents to csscripts
   win_copy:
-    src: templates/powershell/
+    src: templates/csscripts/powershell/
     dest: C:\csscripts\powershell
