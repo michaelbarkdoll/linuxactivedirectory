@@ -22,13 +22,15 @@
   register: adremovecomputerobject
   when: adcomputerobject.stdout is search("exists")
 
-- name: Powershell output
+- name: Powershell output adremovecomputerobject
   debug:
     var: adremovecomputerobject
+  when: adcomputerobject.stdout is search("exists")
 
 - name: Fail if {{ ad_short_hostname }} was not removed from AD at {{ ad_computer_ou }}
   ansible.builtin.debug:
     msg: Debug {{ ad_short_hostname }} AD status {{ adremovecomputerobject.stdout }} at {{ ad_computer_ou }}
   failed_when: adremovecomputerobject.stdout is not search("removed")
+  when: adcomputerobject.stdout is search("exists")
 
 
