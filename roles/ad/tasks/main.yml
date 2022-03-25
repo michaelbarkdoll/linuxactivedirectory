@@ -34,7 +34,7 @@
 #   - post-ad-join
 #   - join-ad
 
-- name: Remove computer from Active Directory
-  include: realmd-remove-ad.yml
+- name: Remove existing computer from Active Directory
+  include: realmd-remove-existing-ad.yml
   tags:
   - remove-ad

@@ -1,0 +1,34 @@
+---
+
+# The following powershell script will remove an existing computer object only when it actually exists
+
+# prerequisities:
+# - RSAT modules to active directory enabled
+# - Remote ssh access
+
+
+- name: Check if {{ ad_short_hostname }} is in AD at {{ ad_computer_ou }}
+  win_shell: |
+      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\adcheckcomp.ps1" {{ ad_short_hostname }} "{{ ad_computer_ou }}"
+  register: adcomputerobject
+
+- name: Powershell output
+  debug:
+    var: adcomputerobject
+
+- name: Remove {{ ad_short_hostname }} from AD at {{ ad_computer_ou }} if it exists
+  win_shell: |
+      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\adremovecomp.ps1" {{ ad_short_hostname }} "{{ ad_computer_ou }}"
+  register: adremovecomputerobject
+  when: adcomputerobject.stdout is search("exists")
+
+- name: Powershell output
+  debug:
+    var: adremovecomputerobject
+
+- name: Fail if {{ ad_short_hostname }} was not removed from AD at {{ ad_computer_ou }}
+  ansible.builtin.debug:
+    msg: Debug {{ ad_short_hostname }} AD status {{ adremovecomputerobject.stdout }} at {{ ad_computer_ou }}
+  failed_when: adremovecomputerobject.stdout is not search("removed")
+
+
