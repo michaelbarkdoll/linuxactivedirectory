@@ -38,3 +38,8 @@
   include: realmd-remove-existing-ad.yml
   tags:
   - remove-ad
+
+- name: Remove existing computer from Configuration Manager
+  include: realmd-remove-existing-configurationmanager.yml
+  tags:
+  - remove-ad

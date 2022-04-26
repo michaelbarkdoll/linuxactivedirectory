@@ -1,0 +1,19 @@
+---
+
+
+- name: Remove {{ ad_short_hostname }} from Configuration Manager
+  win_shell: |
+      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\removeconfigmanager.ps1" {{ ad_short_hostname }}
+  register: configmanagercomputerobject
+
+
+- name: Powershell output
+  debug:
+    var: configmanagercomputerobject
+
+# The following would require a precheck to confirm that it existed
+# - name: Fail if {{ ad_short_hostname }} was not removed from configuration manager
+#   ansible.builtin.debug:
+#     msg: Debug {{ ad_short_hostname }} AD status {{ configmanagercomputerobject.stdout }}
+#   failed_when: configmanagercomputerobject.stdout is not search("removed")
+#   when: adcomputerobject.stdout is search("exists")
