@@ -19,8 +19,8 @@
   include_tasks: 
     file: realmd-checknoexist-ad.yml
     apply:
-    tags:
-      - create-ad
+      tags:
+        - create-ad
   tags:
   - create-ad
 
