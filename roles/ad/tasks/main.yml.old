@@ -1,14 +1,7 @@
 ---
 
 - name: Prep Windows machine with powershell scripts
-  include_tasks: 
-    file: windows.yml
-    apply:
-      tags:
-        - create-ad
-        - join-ad
-        - post-ad-join
-        - remove-ad
+  include: windows.yml
   tags:
   - create-ad
   - join-ad
@@ -16,29 +9,17 @@
   - remove-ad
 
 - name: Check AD doesnt have computer object
-  include_tasks: 
-    file: realmd-checknoexist-ad.yml
-    apply:
-    tags:
-      - create-ad
+  include: realmd-checknoexist-ad.yml
   tags:
   - create-ad
 
 - name: Create AD computer object
-  include_tasks: 
-    file: realmd-createcomp-ad.yml
-    apply:
-      tags:
-        - create-ad
+  include: realmd-createcomp-ad.yml
   tags:
   - create-ad
 
 - name: Check AD has computer object previously created
-  include_tasks: 
-    file: realmd-checkexist-ad.yml
-    apply:
-      tags:
-        - join-ad
+  include: realmd-checkexist-ad.yml
   tags:
   - join-ad
 
@@ -54,19 +35,11 @@
 #   - join-ad
 
 - name: Remove existing computer from Active Directory
-  include_tasks: 
-    file: realmd-remove-existing-ad.yml
-    apply:
-      tags:
-        - remove-ad
+  include: realmd-remove-existing-ad.yml
   tags:
   - remove-ad
 
 - name: Remove existing computer from Configuration Manager
-  include_tasks: 
-    file: realmd-remove-existing-configurationmanager.yml
-    apply:
-      tags:
-        - remove-ad
+  include: realmd-remove-existing-configurationmanager.yml
   tags:
   - remove-ad
