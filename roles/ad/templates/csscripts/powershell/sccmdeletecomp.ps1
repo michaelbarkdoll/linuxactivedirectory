@@ -20,7 +20,8 @@ $device = Get-CMDevice -Name "$computername"
 if ($device) {
     Write-Host "Device exists is in SCCM."
     Remove-CMDevice -Name "$computername" -Force
-    if ($? -ne True) {
+    # Check if commmand failed
+    if (! $?) {
         Write-Host "Failed to delete object in SCCM."
     }
 } else {
