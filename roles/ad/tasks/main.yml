@@ -64,9 +64,18 @@
 
 - name: Remove existing computer from Configuration Manager
   include_tasks: 
-    file: realmd-remove-existing-configurationmanager.yml
+    file: realmd-remove-existing-configmanager.yml
     apply:
       tags:
         - remove-ad
   tags:
   - remove-ad
+
+#- name: Remove existing computer from Configuration Manager
+#  include_tasks: 
+#    file: realmd-remove-existing-configurationmanager.yml
+#    apply:
+#      tags:
+#        - remove-ad
+#  tags:
+#  - remove-ad

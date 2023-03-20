@@ -27,16 +27,34 @@
 
 ########################################
 
-- name: Check if {{ ad_short_hostname }} is in SCCM and delete it
+- name: Check if {{ ad_short_hostname }} is in SCCM
   win_shell: |
-      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\sccmdeletecomp.ps1" {{ ad_short_hostname }}
+      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\sccmcheckcomp.ps1" {{ ad_short_hostname }}
   register: sccmcomputerobject
 
 - name: Powershell output
   debug:
     var: sccmcomputerobject
 
-- name: Fail if {{ ad_short_hostname }} was unable to remove in SCCM
+- name: Fail if {{ ad_short_hostname }} is in SCCM
   ansible.builtin.debug:
     msg: Debug {{ ad_short_hostname }} SCCM status {{ sccmcomputerobject.stdout }}
-  failed_when: sccmcomputerobject.stdout is search("Failed")
+  failed_when: sccmcomputerobject.stdout is search("exists")
+
+
+  ########################################
+
+
+#- name: Check if {{ ad_short_hostname }} is in SCCM and delete it
+#  win_shell: |
+#      powershell.exe -noprofile -executionpolicy bypass -File "C:\csscripts\powershell\sccmdeletecomp.ps1" {{ ad_short_hostname }}
+#  register: sccmcomputerobject
+#
+#- name: Powershell output
+#  debug:
+#    var: sccmcomputerobject
+#
+#- name: Fail if {{ ad_short_hostname }} was unable to remove in SCCM
+#  ansible.builtin.debug:
+#    msg: Debug {{ ad_short_hostname }} SCCM status {{ sccmcomputerobject.stdout }}
+#  failed_when: sccmcomputerobject.stdout is search("Failed")
