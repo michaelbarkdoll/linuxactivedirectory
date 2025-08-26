@@ -1,11 +1,13 @@
 # Setup ssh server access on a windows machine joined to active directory
 
 https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html
+
 https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH
 
 
 Download the latest build of OpenSSH.
 https://github.com/PowerShell/Win32-OpenSSH/releases/latest
+
 https://github.com/PowerShell/Win32-OpenSSH/wiki/How-to-retrieve-links-to-latest-packages
 ```
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
