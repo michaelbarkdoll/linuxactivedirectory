@@ -101,3 +101,43 @@ if (-not (Select-String -Path $auth -Pattern $aduserpubkey -SimpleMatch -Quiet))
     Add-Content -Path $auth -Value ($aduserpubkey + "`r`n") -Encoding ASCII
 }
 ```
+
+F) (Optional) Enforce public-key authentication only
+
+By default, OpenSSH on Windows will still accept password logins for domain users. To lock down to pubkey only, edit C:\ProgramData\ssh\sshd_config and add/modify these lines (before any Match blocks):
+```
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+GSSAPIAuthentication no
+```
+⚠️ GSSAPIAuthentication no disables Kerberos/SSO logins. If you want to allow domain single-sign-on, leave it as yes.
+
+Idempotent PowerShell to apply the settings
+```
+$cfg = Join-Path $env:PROGRAMDATA 'ssh\sshd_config'
+
+# Ensure file exists
+if (-not (Test-Path $cfg)) { New-Item -Path $cfg -ItemType File -Force | Out-Null }
+
+function Set-SshdConfigLine {
+    param([string]$Key, [string]$Value)
+    $pattern = "^\s*$([regex]::Escape($Key))\s+.*$"
+    $line    = "$Key $Value"
+    if (Select-String -Path $cfg -Pattern $pattern -Quiet) {
+        (Get-Content $cfg) -replace $pattern, $line | Set-Content $cfg -Encoding ASCII
+    } else {
+        Add-Content -Path $cfg -Value ($line + "`r`n") -Encoding ASCII
+    }
+}
+
+Set-SshdConfigLine 'PubkeyAuthentication' 'yes'
+Set-SshdConfigLine 'PasswordAuthentication' 'no'
+Set-SshdConfigLine 'KbdInteractiveAuthentication' 'no'
+Set-SshdConfigLine 'GSSAPIAuthentication' 'no'
+
+Restart-Service sshd
+Write-Host "OpenSSH set to public-key only."
+```
+
+
