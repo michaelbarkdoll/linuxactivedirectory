@@ -1,0 +1,44 @@
+---
+
+# prerequisities:
+# - RSAT modules to active directory enabled
+# - Remote ssh
+
+# - name: Precreate/ensure computer object with fixed one-time password
+#   ansible.windows.win_shell: >
+#     powershell.exe -NoProfile -ExecutionPolicy Bypass
+#     -File "C:\csscripts\powershell\adsetpasswdcomp.ps1"
+#     "{{ ad_short_hostname }}"
+#     "{{ ad_computer_ou }}"
+#     "{{ ad_one_time_password }}"
+#     "{{ ad_enc_types | default(24) }}"
+#   register: adcomputerobject
+#   changed_when: >
+#     adcomputerobject.rc == 0 and
+#     (adcomputerobject.stdout is search('status=created') or
+#      adcomputerobject.stdout is search('status=updated'))
+#   failed_when: adcomputerobject.rc != 0
+
+- name: Precreate/ensure computer object with fixed one-time password
+  ansible.windows.win_shell: >
+    powershell.exe -NoProfile -ExecutionPolicy Bypass
+    -File "C:\csscripts\powershell\adsetpasswdcomp.ps1"
+    "{{ ad_short_hostname }}"
+    "{{ ad_computer_ou }}"
+  register: adcomputerobject
+  changed_when: >
+    adcomputerobject.rc == 0 and
+    (adcomputerobject.stdout is search('status=created') or
+     adcomputerobject.stdout is search('status=updated'))
+  failed_when: adcomputerobject.rc != 0
+
+- name: Powershell output
+  debug:
+    var: adcomputerobject
+
+- name: Fail if {{ ad_short_hostname }} is not created in AD at {{ ad_computer_ou }}
+  ansible.builtin.debug:
+    msg: Debug {{ ad_short_hostname }} AD status {{ adcomputerobject.stdout }} at {{ ad_computer_ou }}
+  failed_when: >
+    adcomputerobject.rc != 0 or
+    not (adcomputerobject.stdout is search("status="))

@@ -33,6 +33,15 @@
   tags:
   - create-ad
 
+- name: Set computer object password
+  include_tasks: 
+    file: realmd-setpasswd-comp-ad.yml
+    apply:
+      tags:
+        - create-password-ad
+  tags:
+  - create-password-ad
+
 - name: Check AD has computer object previously created
   include_tasks: 
     file: realmd-checkexist-ad.yml
