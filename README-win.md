@@ -1,11 +1,13 @@
 # Setup ssh server access on a windows machine joined to active directory
 
 https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html
+
 https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH
 
 
 Download the latest build of OpenSSH.
 https://github.com/PowerShell/Win32-OpenSSH/releases/latest
+
 https://github.com/PowerShell/Win32-OpenSSH/wiki/How-to-retrieve-links-to-latest-packages
 ```
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -98,9 +100,39 @@ cat ~/.ssh/id_rsa.pub
 ```
 
 ```
-$aduserpubkey = "<PUBLIC_KEY>"
-$searchText = "$aduserpubkey"
-$file = Get-ChildItem $env:PROGRAMDATA\ssh\administrators_authorized_keys
-$result = Select-String -Quiet -Pattern "^$searchText" -Path $file
-if (-not $result) { Add-Content -Path $file -Value "$aduserpubkey" }
+# --- CONFIGURE THIS ---
+$aduserpubkey = 'ssh-ed25519 AAAA... your_key_here ... comment'
+
+# Paths
+$programDataSsh = Join-Path $env:PROGRAMDATA 'ssh'
+$filePath = Join-Path $programDataSsh 'administrators_authorized_keys'
+
+# Ensure folder exists
+if (-not (Test-Path $programDataSsh)) {
+    New-Item -Path $programDataSsh -ItemType Directory -Force | Out-Null
+}
+
+# Ensure file exists
+if (-not (Test-Path $filePath)) {
+    New-Item -Path $filePath -ItemType File -Force | Out-Null
+}
+
+# Lock down permissions: only SYSTEM and Administrators should have access
+# Remove inheritance and wipe existing explicit ACEs
+icacls $filePath /inheritance:r | Out-Null
+# Grant read/write to SYSTEM and to the local Administrators group
+icacls $filePath /grant:r "SYSTEM:(R,W)" "BUILTIN\Administrators:(R,W)" | Out-Null
+# (Optional) Remove common groups if present (ignore if they don't exist)
+icacls $filePath /remove:g "Users" "Authenticated Users" 2>$null | Out-Null
+
+# Add the key if the exact line isn't already present (treat as plain text)
+$exists = Select-String -Path $filePath -Pattern $aduserpubkey -SimpleMatch -Quiet
+if (-not $exists) {
+    Add-Content -Path $filePath -Value ($aduserpubkey + "`r`n") -Encoding ASCII
+}
+
+# (Recommended) restart the SSH service after changes
+try { Restart-Service sshd -ErrorAction Stop } catch {}
+
+Write-Host "Done. File at $filePath updated and permissions set."
 ```
