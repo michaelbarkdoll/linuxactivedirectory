@@ -16,5 +16,4 @@
 - name: Fail if {{ ad_short_hostname }} was not removed from AD at {{ ad_computer_ou }}
   ansible.builtin.debug:
     msg: Debug {{ ad_short_hostname }} AD status {{ adcomputerobject.stdout }} at {{ ad_computer_ou }}
-  failed_when: adcomputerobject.stdout is not search("removed")
-
+  failed_when: adcomputerobject.stdout | trim not in ["removed", "none"]
