@@ -10,59 +10,87 @@ import-module activedirectory
 $servername=$args[0]
 $searchbase=$args[1]
 
-#$servername="CS-537982"
-#$searchbase="ou=A410,ou=Linux Labs,ou=Computers,ou=CS,ou=COS,ou=Academic Affairs,dc=ad,dc=domain,dc=edu"
+function Test-InSearchBase {
+    param (
+        [string]$DistinguishedName,
+        [string]$SearchBase
+    )
 
-$serverlist = @(
-    $servername
-)
+    if ([string]::IsNullOrWhiteSpace($DistinguishedName) -or [string]::IsNullOrWhiteSpace($SearchBase)) {
+        return $false
+    }
 
-foreach ($server in $serverlist) {
+    return $DistinguishedName.ToLower().EndsWith("," + $SearchBase.ToLower())
+}
 
-    try{
-        $output = Get-ADComputer -Filter "Name -eq '${server}'" -SearchBase $searchbase
-        if ($output -eq $Null) {
-            Write-Host "none"
+function Format-DistinguishedNames {
+    param (
+        [object[]]$Computers
+    )
+
+    return (($Computers | ForEach-Object { $_.DistinguishedName }) -join "|")
+}
+
+try {
+    $matches = @(Get-ADComputer -Filter "Name -eq '${servername}'" -Properties DistinguishedName -ErrorAction Stop)
+}
+catch {
+    $matches = @()
+}
+
+if ($matches.Count -eq 0) {
+    Write-Host "none"
+    exit 0
+}
+
+if ($matches.Count -gt 1) {
+    Write-Host "multiple_matches:$((Format-DistinguishedNames -Computers $matches))"
+    exit 0
+}
+
+$target = $matches[0]
+
+if (-not (Test-InSearchBase -DistinguishedName $target.DistinguishedName -SearchBase $searchbase)) {
+    Write-Host "exists_in_other_ou:$($target.DistinguishedName)"
+    exit 0
+}
+
+try {
+    Remove-ADComputer -Identity $target.DistinguishedName -Confirm:$False -ErrorAction Stop
+}
+catch {
+    try {
+        $childObjects = @(Get-ADObject -Filter * -SearchBase $target.DistinguishedName -ErrorAction Stop | Where-Object { $_.ObjectClass -eq "msFVE-RecoveryInformation" })
+        if ($childObjects.Count -gt 0) {
+            $childObjects | ForEach-Object {
+                Remove-ADObject $_ -Confirm:$False -ErrorAction Stop
+            }
+            Remove-ADComputer -Identity $target.DistinguishedName -Confirm:$False -ErrorAction Stop
         }
         else {
-            try {
-                $output = Get-ADComputer -Filter "Name -eq '${server}'" -SearchBase $searchbase | Remove-ADComputer -Confirm:$False -ErrorAction Stop
-                if ($?) 
-                {
-                    Write-Host "removed"  
-                }
-            }
-            catch {
-                #Write-Host "In catch loop"
-                # Check for Bitlocker recovery information child objects if deletion failed
-                $computerDN = $output.DistinguishedName
-                #Get-ADObject -Filter * -SearchBase $computerDN | Select-Object Name, ObjectClass
-
-                #$allchildObjects = Get-ADObject -Filter * -SearchBase $computerDN
-                $childObjects = Get-ADObject -Filter * -SearchBase $computerDN | Where-Object { $_.ObjectClass -eq "msFVE-RecoveryInformation" }
-
-                
-                if ($childObjects) {
-                    # Delete Bitlocker recovery information objects
-                    $childObjects | ForEach-Object {
-                        Remove-ADObject $_ -Confirm:$false
-                    }
-
-                    # Attempt to remove the computer object again
-                    $output | Remove-ADComputer -Confirm:$False
-                    if ($?) {
-                        Write-Host "removed"
-                    } else {
-                        Write-Host "error"
-                    }
-                }
-                else {
-                    Write-Host "error"
-                }
-            }
+            throw
         }
     }
-    catch{
-        Write-Host "none"
+    catch {
+        $message = $_.Exception.Message -replace "[\r\n]+", " "
+        Write-Host "error:$message"
+        exit 0
     }
+}
+
+try {
+    $remaining = @(Get-ADComputer -Filter "Name -eq '${servername}'" -Properties DistinguishedName -ErrorAction Stop)
+}
+catch {
+    $remaining = @()
+}
+
+if ($remaining.Count -eq 0) {
+    Write-Host "removed"
+}
+elseif ($remaining.Count -eq 1) {
+    Write-Host "error:still_exists:$($remaining[0].DistinguishedName)"
+}
+else {
+    Write-Host "error:multiple_remaining:$((Format-DistinguishedNames -Computers $remaining))"
 }
