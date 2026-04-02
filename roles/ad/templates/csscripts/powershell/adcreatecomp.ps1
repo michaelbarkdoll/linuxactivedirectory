@@ -10,23 +10,60 @@ import-module activedirectory
 $servername=$args[0]
 $searchbase=$args[1]
 
+function Test-InSearchBase {
+    param (
+        [string]$DistinguishedName,
+        [string]$SearchBase
+    )
 
-$serverlist = @(
-    $servername
-)
-
-foreach ($server in $serverlist) {
-
-    try{
-        $output = New-ADComputer -Name "${server}" -SamAccountName "${server}" -Path "${searchbase}"
-        if ($?) {
-            Write-Host "created"
-        }
-        else {
-            Write-Host "exists"  
-        }
+    if ([string]::IsNullOrWhiteSpace($DistinguishedName) -or [string]::IsNullOrWhiteSpace($SearchBase)) {
+        return $false
     }
-    catch{
-        Write-Host "exists"
+
+    return $DistinguishedName.ToLower().EndsWith("," + $SearchBase.ToLower())
+}
+
+function Format-DistinguishedNames {
+    param (
+        [object[]]$Computers
+    )
+
+    return (($Computers | ForEach-Object { $_.DistinguishedName }) -join "|")
+}
+
+try {
+    $matches = @(Get-ADComputer -Filter "Name -eq '${servername}'" -Properties DistinguishedName -ErrorAction Stop)
+}
+catch {
+    $matches = @()
+}
+
+if ($matches.Count -gt 1) {
+    Write-Host "multiple_matches:$((Format-DistinguishedNames -Computers $matches))"
+    exit 0
+}
+
+if ($matches.Count -eq 1) {
+    if (Test-InSearchBase -DistinguishedName $matches[0].DistinguishedName -SearchBase $searchbase) {
+        Write-Host "exists_in_ou"
     }
+    else {
+        Write-Host "exists_in_other_ou:$($matches[0].DistinguishedName)"
+    }
+    exit 0
+}
+
+try {
+    New-ADComputer -Name "${servername}" -SamAccountName "${servername}" -Path "${searchbase}" -ErrorAction Stop | Out-Null
+    $createdObject = Get-ADComputer -Filter "Name -eq '${servername}'" -SearchBase $searchbase -Properties DistinguishedName -ErrorAction Stop
+    if ($null -ne $createdObject) {
+        Write-Host "created"
+    }
+    else {
+        Write-Host "error:verification_failed"
+    }
+}
+catch {
+    $message = $_.Exception.Message -replace "[\r\n]+", " "
+    Write-Host "error:$message"
 }
